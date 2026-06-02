@@ -1,0 +1,41 @@
+{
+  "project": {
+    "name": "taskflow",
+    "description": "A lightweight task management API for small teams",
+    "project_type": "api_service",
+    "consumer_scale": "small_team",
+    "dev_scale": "solo",
+    "agentic_tools": ["claude_code"],
+    "distribute_across_agents": false,
+    "tool_subscriptions": [
+      {"tool": "claude_code", "tier": "pro"}
+    ],
+    "expertise_level": "intermediate"
+  },
+  "phase2": {
+    "tech_stack": {
+      "languages": ["Python"],
+      "frameworks": ["FastAPI", "SQLAlchemy"],
+      "databases": ["PostgreSQL", "Redis"],
+      "infra_cloud": ["Railway"],
+      "other": ["Stripe"]
+    },
+    "constraints": {
+      "compliance": ["none"],
+      "existing_codebase": false,
+      "existing_stack_notes": "",
+      "budget_range": "bootstrapped",
+      "timeline": "6-week MVP",
+      "key_constraints": ["must be open source", "single binary deploy"]
+    },
+    "core_features": [
+      {"name": "Task CRUD", "description": "Create, read, update, delete tasks with assignees and due dates", "priority": "must_have"},
+      {"name": "Team workspaces", "description": "Isolated workspaces per team with member invites", "priority": "must_have"},
+      {"name": "Activity feed", "description": "Real-time feed of task changes per workspace", "priority": "should_have"},
+      {"name": "Webhook notifications", "description": "Fire webhooks on task state changes for integrations", "priority": "nice_to_have"}
+    ],
+    "magic_moment": "The moment a developer calls POST /tasks and gets a structured response they can immediately render in their app",
+    "interview_summary": "TaskFlow is a clean REST API for team task management, built with FastAPI and PostgreSQL. The developer wants a production-ready but lean API that can be self-hosted. The main challenge is designing a clean workspace isolation model that scales to multiple teams without over-engineering.",
+    "conversation_history": []
+  }
+}

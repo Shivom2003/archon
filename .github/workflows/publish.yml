@@ -1,0 +1,107 @@
+name: Publish to PyPI
+
+# Triggers on a version tag push: git tag v0.1.0 && git push --tags
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Required for PyPI Trusted Publishing (OIDC) — no API token needed in secrets.
+# Before first publish, configure a Trusted Publisher on PyPI:
+#   https://pypi.org/manage/account/publishing/
+#   Publisher: GitHub Actions
+#   Owner: archon-ai
+#   Repository: archon
+#   Workflow: publish.yml
+#   Environment: pypi
+permissions:
+  contents: read
+  id-token: write   # OIDC token for PyPI trusted publishing
+
+jobs:
+  # Gate: run the full test suite before attempting to publish
+  test:
+    name: Test before publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest tests/ -q
+
+  build:
+    name: Build distribution
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install hatch
+        run: pip install hatch
+
+      - name: Build wheel and sdist
+        run: hatch build
+
+      - name: Verify version matches tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"    # strip leading 'v' from tag
+          PKG=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['version'])")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "ERROR: git tag '$TAG' != pyproject.toml version '$PKG'"
+            exit 1
+          fi
+          echo "Version check passed: $PKG"
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi   # Requires a GitHub Environment named 'pypi' with protection rules
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI (Trusted Publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No 'with: password' needed — OIDC trusted publishing handles auth.
+
+  # Also create a GitHub Release with the built artifacts attached
+  github-release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'a') || contains(github.ref_name, 'b') || contains(github.ref_name, 'rc') }}

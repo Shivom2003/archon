@@ -1,0 +1,8 @@
+# Default reviewer for all files
+* @archon-ai/maintainers
+
+# Plan registry changes need careful review — limits change frequently
+archon/plan_registry.py @archon-ai/maintainers
+
+# Workflow changes need a second pair of eyes
+.github/workflows/ @archon-ai/maintainers
