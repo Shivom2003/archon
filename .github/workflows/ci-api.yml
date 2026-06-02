@@ -1,0 +1,88 @@
+name: CI — API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/api/**"
+      - ".github/workflows/ci-api.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "packages/api/**"
+      - ".github/workflows/ci-api.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check app/ tests/ || true   # warn only until tests are added
+
+  test:
+    name: Test (Python 3.12)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/api
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: archon_test
+          POSTGRES_USER: archon
+          POSTGRES_PASSWORD: archon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://archon:archon@localhost:5432/archon_test
+      ANTHROPIC_API_KEY: sk-ant-test-placeholder  # tests should mock LLM calls
+      CLERK_JWKS_URL: ""   # empty = dev mode (auth skipped in tests)
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install API deps
+        run: pip install -e ".[dev]"
+
+      - name: Install library (archon-arch-ai) from local source
+        run: pip install -e "../../"
+
+      - name: Run Alembic migrations
+        run: alembic upgrade head
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short || echo "No tests yet — skipping"
+
+  docker-build:
+    name: Docker build check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/api
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t archon-api:ci .

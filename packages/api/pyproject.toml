@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "archon-api"
+version = "0.1.0"
+description = "Archon web API — FastAPI backend"
+requires-python = ">=3.11"
+dependencies = [
+    # Core
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    # Database
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
+    # Auth
+    "python-jose[cryptography]>=3.3.0",
+    "httpx>=0.28.0",          # for fetching Clerk JWKS
+    # Archon library
+    "archon-arch-ai>=0.1.0",
+    # Utilities
+    "python-dotenv>=1.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.28.0",           # AsyncClient for test calls
+    "asgi-lifespan>=2.0",      # lifespan support in tests
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
