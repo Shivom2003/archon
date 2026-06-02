@@ -1,11 +1,17 @@
 """Shared pytest fixtures."""
 
-import json
 from pathlib import Path
 
 import pytest
 
-from archon.models.enums import AgenticTool, ConsumerScale, DevScale, ExpertiseLevel, ProjectType, SubscriptionTier
+from archon.models.enums import (
+    AgenticTool,
+    ConsumerScale,
+    DevScale,
+    ExpertiseLevel,
+    ProjectType,
+    SubscriptionTier,
+)
 from archon.models.interview import CoreFeature, Phase2Data, ProjectConstraints, TechStack
 from archon.models.project import ProjectConfig, ToolSubscription
 
@@ -30,6 +36,7 @@ def sample_config() -> ProjectConfig:
 @pytest.fixture
 def sample_phase2() -> Phase2Data:
     from archon.models.enums import Priority
+
     return Phase2Data(
         tech_stack=TechStack(
             languages=["Python"],
@@ -46,7 +53,11 @@ def sample_phase2() -> Phase2Data:
         ),
         core_features=[
             CoreFeature(name="Task CRUD", description="Create/read/update/delete tasks", priority=Priority.MUST_HAVE),
-            CoreFeature(name="Team workspaces", description="Isolated workspaces per team", priority=Priority.MUST_HAVE),
+            CoreFeature(
+                name="Team workspaces",
+                description="Isolated workspaces per team",
+                priority=Priority.MUST_HAVE,
+            ),
             CoreFeature(name="Activity feed", description="Real-time feed of changes", priority=Priority.SHOULD_HAVE),
         ],
         magic_moment="The moment a developer calls POST /tasks and gets an immediately usable response",
@@ -58,9 +69,18 @@ def sample_phase2() -> Phase2Data:
 def sample_spec(sample_config, sample_phase2):
     """A minimal but valid ArchitectSpec for testing generators."""
     from archon.models.spec import (
-        ApiEndpoint, ArchitectSpec, ArchitectureData, ArchitectureDecision,
-        RoadmapData, RoadmapPhase, RoadmapTask, SystemComponent, DataEntity, Checkpoint,
+        ApiEndpoint,
+        ArchitectSpec,
+        ArchitectureData,
+        ArchitectureDecision,
+        Checkpoint,
+        DataEntity,
+        RoadmapData,
+        RoadmapPhase,
+        RoadmapTask,
+        SystemComponent,
     )
+
     return ArchitectSpec(
         project=sample_config,
         phase2=sample_phase2,
@@ -118,7 +138,11 @@ def sample_spec(sample_config, sample_phase2):
                         after_task="Write Alembic migrations",
                         turns_used_estimate=7,
                         reason="Good stopping point before beginning API layer.",
-                        resume_prompt="Continue taskflow project. Phase 1 complete (DB schema + migrations passing). Begin Phase 2: API Layer. Context: .architect/ARCHITECTURE.md",
+                        resume_prompt=(
+                            "Continue taskflow project. Phase 1 complete "
+                            "(DB schema + migrations passing). Begin Phase 2: "
+                            "API Layer. Context: .architect/ARCHITECTURE.md"
+                        ),
                     ),
                 ),
             ],

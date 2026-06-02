@@ -22,7 +22,6 @@ from archon.models.spec import (
     RoadmapTask,
     SystemComponent,
 )
-from archon.plan_registry import get_plan_config
 from archon.prompts.synthesizer import (
     build_synthesis_system_prompt,
     build_synthesis_tool,
@@ -55,8 +54,7 @@ async def synthesize(
     tool_calls = [b for b in response["content"] if b["type"] == "tool_use"]
     if not tool_calls:
         raise RuntimeError(
-            "Synthesis failed: Claude did not call generate_architecture_spec. "
-            f"Stop reason: {response['stop_reason']}"
+            f"Synthesis failed: Claude did not call generate_architecture_spec. Stop reason: {response['stop_reason']}"
         )
 
     data = tool_calls[0]["input"]
@@ -154,9 +152,7 @@ def _parse_spec(
                 primary_agent=agent,
                 agent_rationale=p.get("agent_rationale", ""),
                 tasks=tasks,
-                estimated_turns_total=p.get("estimated_turns_total", sum(
-                    t.estimated_turns for t in tasks
-                )),
+                estimated_turns_total=p.get("estimated_turns_total", sum(t.estimated_turns for t in tasks)),
                 checkpoint=checkpoint,
                 success_criteria=p.get("success_criteria", []),
             )

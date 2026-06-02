@@ -11,7 +11,6 @@ from archon.models.enums import AgenticTool, Priority, RoadmapPhaseStatus
 from archon.models.interview import CoreFeature, Phase2Data, ProjectConstraints, TechStack
 from archon.models.project import ProjectConfig
 
-
 # ---------------------------------------------------------------------------
 # Architecture sub-models
 # ---------------------------------------------------------------------------
@@ -30,10 +29,10 @@ class SystemComponent(BaseModel):
 class ApiEndpoint(BaseModel):
     """A high-level API endpoint or RPC."""
 
-    method: str = ""          # GET, POST, etc. (empty for non-HTTP)
+    method: str = ""  # GET, POST, etc. (empty for non-HTTP)
     path: str
     description: str
-    request_shape: str = ""   # brief human-readable description
+    request_shape: str = ""  # brief human-readable description
     response_shape: str = ""
 
 
@@ -81,9 +80,7 @@ class Checkpoint(BaseModel):
     after_task: str = Field(description="Task title after which to checkpoint")
     turns_used_estimate: int
     reason: str
-    resume_prompt: str = Field(
-        description="Exact prompt the user can paste to resume in a new session"
-    )
+    resume_prompt: str = Field(description="Exact prompt the user can paste to resume in a new session")
 
 
 class RoadmapPhase(BaseModel):
@@ -93,9 +90,7 @@ class RoadmapPhase(BaseModel):
     name: str
     description: str = ""
     primary_agent: AgenticTool
-    agent_rationale: str = Field(
-        default="", description="Why this agent is best for this phase"
-    )
+    agent_rationale: str = Field(default="", description="Why this agent is best for this phase")
     tasks: list[RoadmapTask] = Field(default_factory=list)
     estimated_turns_total: int = 0
     checkpoint: Checkpoint | None = None
@@ -124,7 +119,7 @@ class ArchitectureDecision(BaseModel):
 
     number: int
     title: str
-    status: str = "accepted"        # accepted | proposed | deprecated | superseded
+    status: str = "accepted"  # accepted | proposed | deprecated | superseded
     context: str = Field(description="What situation prompted this decision?")
     decision: str = Field(description="What was decided?")
     rationale: str = Field(description="Why was this the right choice?")

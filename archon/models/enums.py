@@ -34,11 +34,11 @@ class ProjectType(StrEnum):
 class ConsumerScale(StrEnum):
     """Scale from the end-user / consumer perspective."""
 
-    PERSONAL = "personal"           # 1 user (yourself)
-    SMALL_TEAM = "small_team"       # 2–20 users (internal tool, small team)
+    PERSONAL = "personal"  # 1 user (yourself)
+    SMALL_TEAM = "small_team"  # 2–20 users (internal tool, small team)
     SMALL_BUSINESS = "small_business"  # 20–500 users
-    MID_MARKET = "mid_market"       # 500–50k users
-    ENTERPRISE = "enterprise"       # 50k+ users / enterprise contracts
+    MID_MARKET = "mid_market"  # 500–50k users
+    ENTERPRISE = "enterprise"  # 50k+ users / enterprise contracts
 
     @property
     def label(self) -> str:
@@ -54,11 +54,11 @@ class ConsumerScale(StrEnum):
 class DevScale(StrEnum):
     """Scale from the development team perspective."""
 
-    SOLO = "solo"                   # 1 developer
-    SMALL_TEAM = "small_team"       # 2–5 developers
-    STARTUP = "startup"             # 5–20 developers
-    SME = "sme"                     # 20–100 developers
-    ENTERPRISE = "enterprise"       # 100+ developers
+    SOLO = "solo"  # 1 developer
+    SMALL_TEAM = "small_team"  # 2–5 developers
+    STARTUP = "startup"  # 5–20 developers
+    SME = "sme"  # 20–100 developers
+    ENTERPRISE = "enterprise"  # 100+ developers
 
     @property
     def label(self) -> str:
@@ -140,7 +140,7 @@ class SubscriptionTier(StrEnum):
     MAX = "max"
     TEAM = "team"
     ENTERPRISE = "enterprise"
-    API = "api"             # Direct API access (no GUI limits)
+    API = "api"  # Direct API access (no GUI limits)
 
     @property
     def label(self) -> str:
@@ -157,9 +157,9 @@ class SubscriptionTier(StrEnum):
 class ExpertiseLevel(StrEnum):
     """Developer's self-assessed expertise level."""
 
-    NOVICE = "novice"           # Learning, needs guidance on tech stack
+    NOVICE = "novice"  # Learning, needs guidance on tech stack
     INTERMEDIATE = "intermediate"  # Comfortable, knows the basics
-    EXPERT = "expert"           # Opinionated, knows exactly what they want
+    EXPERT = "expert"  # Opinionated, knows exactly what they want
 
     @property
     def label(self) -> str:

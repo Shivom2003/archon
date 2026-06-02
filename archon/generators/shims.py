@@ -10,11 +10,13 @@ from archon.generators.base import BaseGenerator
 
 class AgentsMdGenerator(BaseGenerator):
     """Generates AGENTS.md — the cross-tool agent instruction standard."""
+
     template_name = "AGENTS.md.j2"
     output_filename = "AGENTS.md"
 
 
 class ClaudeMdGenerator(BaseGenerator):
     """Generates CLAUDE.md — Claude Code native format."""
+
     template_name = "CLAUDE.md.j2"
     output_filename = "CLAUDE.md"

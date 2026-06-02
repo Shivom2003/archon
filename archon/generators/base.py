@@ -27,8 +27,8 @@ class BaseGenerator:
     Subclasses set `template_name` and `output_filename`.
     """
 
-    template_name: str = ""        # e.g. "SPEC.md.j2"
-    output_filename: str = ""      # e.g. "SPEC.md"
+    template_name: str = ""  # e.g. "SPEC.md.j2"
+    output_filename: str = ""  # e.g. "SPEC.md"
 
     def __init__(self, spec: ArchitectSpec) -> None:
         self.spec = spec

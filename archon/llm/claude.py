@@ -33,9 +33,7 @@ class ClaudeClient(LLMClient):
         self._model = model or os.getenv("ARCHON_MODEL", DEFAULT_MODEL)
         self._api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         if not self._api_key:
-            raise ValueError(
-                "No Anthropic API key found. Set ANTHROPIC_API_KEY or pass api_key=."
-            )
+            raise ValueError("No Anthropic API key found. Set ANTHROPIC_API_KEY or pass api_key=.")
         self._client = anthropic.AsyncAnthropic(api_key=self._api_key)
 
     @property
@@ -79,10 +77,14 @@ class ClaudeClient(LLMClient):
 
         betas = [_CACHE_BETA] if cache_system else []
 
-        response = await self._client.beta.messages.create(
-            **kwargs,
-            betas=betas,
-        ) if cache_system else await self._client.messages.create(**kwargs)
+        response = (
+            await self._client.beta.messages.create(
+                **kwargs,
+                betas=betas,
+            )
+            if cache_system
+            else await self._client.messages.create(**kwargs)
+        )
 
         # Normalise to a plain dict for easy testing / mocking
         return {
@@ -92,9 +94,7 @@ class ClaudeClient(LLMClient):
                 "input_tokens": response.usage.input_tokens,
                 "output_tokens": response.usage.output_tokens,
                 "cache_read_tokens": getattr(response.usage, "cache_read_input_tokens", 0),
-                "cache_creation_tokens": getattr(
-                    response.usage, "cache_creation_input_tokens", 0
-                ),
+                "cache_creation_tokens": getattr(response.usage, "cache_creation_input_tokens", 0),
             },
         }
 

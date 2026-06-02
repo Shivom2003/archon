@@ -19,12 +19,8 @@ class PlanConfig(BaseModel):
 
     tool: AgenticTool
     tier: SubscriptionTier
-    turns_per_session: int = Field(
-        description="Conservative estimate of turns before a usage limit is hit"
-    )
-    checkpoint_every: int = Field(
-        description="Insert a checkpoint marker every N turns in the roadmap"
-    )
+    turns_per_session: int = Field(description="Conservative estimate of turns before a usage limit is hit")
+    checkpoint_every: int = Field(description="Insert a checkpoint marker every N turns in the roadmap")
     notes: str = Field(default="", description="Human-readable notes about this plan")
 
     @property

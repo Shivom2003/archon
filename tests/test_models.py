@@ -3,7 +3,13 @@
 import pytest
 from pydantic import ValidationError
 
-from archon.models.enums import AgenticTool, ConsumerScale, ExpertiseLevel, ProjectType, SubscriptionTier
+from archon.models.enums import (
+    AgenticTool,
+    ConsumerScale,
+    ExpertiseLevel,
+    ProjectType,
+    SubscriptionTier,
+)
 from archon.models.project import ProjectConfig, ToolSubscription
 
 
@@ -20,7 +26,7 @@ def test_project_config_requires_at_least_one_tool():
             project_type=ProjectType.API_SERVICE,
             consumer_scale=ConsumerScale.SMALL_TEAM,
             dev_scale="solo",
-            agentic_tools=[],   # empty — should fail
+            agentic_tools=[],  # empty — should fail
             expertise_level=ExpertiseLevel.INTERMEDIATE,
         )
 
@@ -52,6 +58,7 @@ def test_enum_labels():
 def test_spec_serialisation(sample_spec):
     """ArchitectSpec round-trips through JSON without loss."""
     from archon.models.spec import ArchitectSpec
+
     json_str = sample_spec.to_json()
     restored = ArchitectSpec.from_json(json_str)
     assert restored.project.name == sample_spec.project.name

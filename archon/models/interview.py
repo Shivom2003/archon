@@ -15,10 +15,15 @@ class TechStack(BaseModel):
     other: list[str] = Field(default_factory=list, description="Any other notable tools")
 
     def is_empty(self) -> bool:
-        return not any([
-            self.languages, self.frameworks, self.databases,
-            self.infra_cloud, self.other,
-        ])
+        return not any(
+            [
+                self.languages,
+                self.frameworks,
+                self.databases,
+                self.infra_cloud,
+                self.other,
+            ]
+        )
 
 
 class ProjectConstraints(BaseModel):

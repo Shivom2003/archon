@@ -66,8 +66,7 @@ PHASE2_TOOLS: list[dict] = [
     {
         "name": "record_tech_stack",
         "description": (
-            "Record the technology choices for the project. "
-            "Can be called multiple times to add more information."
+            "Record the technology choices for the project. Can be called multiple times to add more information."
         ),
         "input_schema": {
             "type": "object",

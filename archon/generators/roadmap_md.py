@@ -1,5 +1,4 @@
 from archon.generators.base import BaseGenerator
-from archon.models.spec import ArchitectSpec
 from archon.plan_registry import get_plan_config
 
 

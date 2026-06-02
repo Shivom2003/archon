@@ -5,10 +5,8 @@ Phase 1 — Structured Rich CLI intake (8 questions, no LLM needed).
 Phase 2 — LLM-driven adaptive interview (Claude uses tool calls to capture data).
 """
 
-import asyncio
 from typing import Any
 
-from rich import print as rprint
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
@@ -26,12 +24,9 @@ from archon.models.enums import (
 from archon.models.interview import (
     CoreFeature,
     Phase2Data,
-    ProjectConstraints,
-    TechStack,
 )
 from archon.models.project import ProjectConfig, ToolSubscription
 from archon.prompts.interviewer import PHASE2_TOOLS, build_phase2_system_prompt
-from archon.session import InterviewSession, SessionState
 
 console = Console()
 
@@ -49,9 +44,7 @@ def _enum_select(prompt: str, enum_cls: type, allow_multiple: bool = False) -> A
     console.print(table)
 
     if allow_multiple:
-        raw = Prompt.ask(
-            f"[bold]{prompt}[/bold] [dim](comma-separated numbers)[/dim]"
-        )
+        raw = Prompt.ask(f"[bold]{prompt}[/bold] [dim](comma-separated numbers)[/dim]")
         indices = [int(x.strip()) - 1 for x in raw.split(",") if x.strip().isdigit()]
         return [members[i] for i in indices if 0 <= i < len(members)]
     else:
@@ -96,9 +89,7 @@ def run_phase1() -> ProjectConfig:
 
     # Q5 — Agentic tools
     console.print("[bold]5/8  Which agentic tools will you use?[/bold]")
-    agentic_tools: list[AgenticTool] = _enum_select(
-        "Select tools", AgenticTool, allow_multiple=True
-    )
+    agentic_tools: list[AgenticTool] = _enum_select("Select tools", AgenticTool, allow_multiple=True)
     if not agentic_tools:
         agentic_tools = [AgenticTool.CLAUDE_CODE]
         console.print("[dim]No tools selected — defaulting to Claude Code.[/dim]")
@@ -144,8 +135,7 @@ def run_phase1() -> ProjectConfig:
 
     console.print(
         Panel(
-            f"[green]Phase 1 complete![/green]\n"
-            f"Project: [bold]{config.name}[/bold] — {config.description}",
+            f"[green]Phase 1 complete![/green]\nProject: [bold]{config.name}[/bold] — {config.description}",
             expand=False,
         )
     )
@@ -166,7 +156,8 @@ async def run_phase2(config: ProjectConfig, llm: LLMClient) -> Phase2Data:
     console.print(
         Panel(
             "[bold cyan]Phase 2 — AI-Driven Interview[/bold cyan]\n"
-            "[dim]Claude will ask follow-up questions about your tech stack, features, and constraints.[/dim]",
+            "[dim]Claude will ask follow-up questions about your tech stack, "
+            "features, and constraints.[/dim]",
             expand=False,
         )
     )
@@ -178,13 +169,14 @@ async def run_phase2(config: ProjectConfig, llm: LLMClient) -> Phase2Data:
     turns = 0
 
     # Kick off the interview
-    messages.append({
-        "role": "user",
-        "content": (
-            "I've completed the intake form. Please start the interview by asking me "
-            "about my tech stack first."
-        ),
-    })
+    messages.append(
+        {
+            "role": "user",
+            "content": (
+                "I've completed the intake form. Please start the interview by asking me about my tech stack first."
+            ),
+        }
+    )
 
     while turns < MAX_TURNS:
         turns += 1
@@ -213,11 +205,13 @@ async def run_phase2(config: ProjectConfig, llm: LLMClient) -> Phase2Data:
 
         for tc in tool_calls:
             result, done = _handle_tool_call(tc["name"], tc["input"], phase2, config)
-            tool_results.append({
-                "type": "tool_result",
-                "tool_use_id": tc["id"],
-                "content": result,
-            })
+            tool_results.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": tc["id"],
+                    "content": result,
+                }
+            )
             if done:
                 interview_complete = True
 
@@ -271,6 +265,7 @@ def _handle_tool_call(
 
         case "record_constraints":
             from archon.models.enums import ComplianceRequirement
+
             c = phase2.constraints
             if "compliance" in inputs:
                 c.compliance = [ComplianceRequirement(v) for v in inputs["compliance"]]
@@ -288,6 +283,7 @@ def _handle_tool_call(
 
         case "record_core_feature":
             from archon.models.enums import Priority
+
             feature = CoreFeature(
                 name=inputs["name"],
                 description=inputs["description"],

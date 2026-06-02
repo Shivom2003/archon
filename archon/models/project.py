@@ -36,14 +36,10 @@ class ProjectConfig(BaseModel):
     project_type: ProjectType = Field(description="Primary category of the project")
 
     # Q3 — Consumer scale
-    consumer_scale: ConsumerScale = Field(
-        description="Expected scale from the end-user / consumer perspective"
-    )
+    consumer_scale: ConsumerScale = Field(description="Expected scale from the end-user / consumer perspective")
 
     # Q4 — Dev scale
-    dev_scale: DevScale = Field(
-        description="Scale from the development team perspective"
-    )
+    dev_scale: DevScale = Field(description="Scale from the development team perspective")
 
     # Q5 — Agentic tools
     agentic_tools: list[AgenticTool] = Field(
@@ -67,9 +63,7 @@ class ProjectConfig(BaseModel):
     )
 
     # Q8 — Expertise
-    expertise_level: ExpertiseLevel = Field(
-        description="Developer's self-assessed expertise level"
-    )
+    expertise_level: ExpertiseLevel = Field(description="Developer's self-assessed expertise level")
 
     def get_subscription(self, tool: AgenticTool) -> SubscriptionTier | None:
         """Return the subscription tier for a given tool, or None if not configured."""

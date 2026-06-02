@@ -10,14 +10,12 @@ Commands:
 """
 
 import asyncio
-import json
 from pathlib import Path
 
 import click
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
-from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
@@ -37,10 +35,7 @@ def _load_spec(output_dir: Path):
 
     spec_path = output_dir / "spec.json"
     if not spec_path.exists():
-        console.print(
-            "[red]No .architect/spec.json found.[/red] "
-            "Run [bold]archon init[/bold] first."
-        )
+        console.print("[red]No .architect/spec.json found.[/red] Run [bold]archon init[/bold] first.")
         raise SystemExit(1)
     return ArchitectSpec.from_json(spec_path.read_text(encoding="utf-8"))
 
@@ -102,13 +97,16 @@ async def _init_async(output_dir: Path, model: str | None, skip_phase2: bool) ->
 
     # Check for existing session
     session = InterviewSession.load(output_dir)
-    if session and session.state == SessionState.COMPLETE:
-        if not click.confirm(
+    if (
+        session
+        and session.state == SessionState.COMPLETE
+        and not click.confirm(
             f"An existing spec for '{session.config.name}' was found. Overwrite?",
             default=False,
-        ):
-            console.print("Aborted.")
-            return
+        )
+    ):
+        console.print("Aborted.")
+        return
 
     session = InterviewSession()
 
@@ -125,6 +123,7 @@ async def _init_async(output_dir: Path, model: str | None, skip_phase2: bool) ->
         session.phase2 = phase2
     else:
         from archon.models.interview import Phase2Data
+
         session.phase2 = Phase2Data()
         console.print("[yellow]Skipping Phase 2 (--skip-phase2 flag set).[/yellow]")
 
@@ -133,9 +132,7 @@ async def _init_async(output_dir: Path, model: str | None, skip_phase2: bool) ->
 
     # Synthesis
     console.print()
-    with console.status(
-        "[bold cyan]Generating architecture specification...[/bold cyan]", spinner="dots"
-    ):
+    with console.status("[bold cyan]Generating architecture specification...[/bold cyan]", spinner="dots"):
         llm = get_client(model)
         spec = await synthesize(config, session.phase2, llm)
 
@@ -236,7 +233,15 @@ def update(output_dir: str, model: str | None) -> None:
     "-f",
     "fmt",
     type=click.Choice(
-        ["spec-md", "architecture-md", "roadmap-md", "decisions-md", "agents-md", "claude-md", "all"],
+        [
+            "spec-md",
+            "architecture-md",
+            "roadmap-md",
+            "decisions-md",
+            "agents-md",
+            "claude-md",
+            "all",
+        ],
         case_sensitive=False,
     ),
     default="all",
@@ -267,10 +272,7 @@ def export(output_dir: str, fmt: str) -> None:
         "claude-md": ClaudeMdGenerator,
     }
 
-    if fmt == "all":
-        gens = all_generators(spec)
-    else:
-        gens = [generator_map[fmt](spec)]
+    gens = all_generators(spec) if fmt == "all" else [generator_map[fmt](spec)]
 
     for gen in gens:
         path = gen.write(out)
@@ -291,4 +293,4 @@ def validate(output_dir: str) -> None:
         )
     except Exception as e:
         console.print(f"[red]✗ Validation failed:[/red] {e}")
-        raise SystemExit(1)
+        raise SystemExit(1) from None

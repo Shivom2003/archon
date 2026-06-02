@@ -1,7 +1,5 @@
 """Tests for the Click CLI."""
 
-import json
-
 import pytest
 from click.testing import CliRunner
 
@@ -46,9 +44,7 @@ def test_cli_export_agents_md(runner, tmp_path, sample_spec):
     spec_path = tmp_path / "spec.json"
     spec_path.write_text(sample_spec.to_json(), encoding="utf-8")
 
-    result = runner.invoke(
-        main, ["export", "--output-dir", str(tmp_path), "--format", "agents-md"]
-    )
+    result = runner.invoke(main, ["export", "--output-dir", str(tmp_path), "--format", "agents-md"])
     assert result.exit_code == 0
     agents_md = tmp_path / "AGENTS.md"
     assert agents_md.exists()
@@ -60,9 +56,7 @@ def test_cli_export_all(runner, tmp_path, sample_spec):
     spec_path = tmp_path / "spec.json"
     spec_path.write_text(sample_spec.to_json(), encoding="utf-8")
 
-    result = runner.invoke(
-        main, ["export", "--output-dir", str(tmp_path), "--format", "all"]
-    )
+    result = runner.invoke(main, ["export", "--output-dir", str(tmp_path), "--format", "all"])
     assert result.exit_code == 0
     expected_files = ["SPEC.md", "ARCHITECTURE.md", "ROADMAP.md", "DECISIONS.md", "AGENTS.md", "CLAUDE.md"]
     for fname in expected_files:

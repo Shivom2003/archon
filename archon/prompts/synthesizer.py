@@ -8,7 +8,6 @@ for deeper architectural reasoning.
 
 from archon.models.interview import Phase2Data
 from archon.models.project import ProjectConfig
-from archon.models.spec import ArchitectSpec
 
 
 def build_synthesis_system_prompt() -> str:
@@ -53,20 +52,15 @@ road (monolith vs. microservices, SQL vs. NoSQL), capture it as a decision recor
 
 def build_synthesis_user_prompt(config: ProjectConfig, phase2: Phase2Data) -> str:
     """Build the user-turn prompt for the synthesis call."""
-    features_str = "\n".join(
-        f"- [{f.priority.value.upper()}] {f.name}: {f.description}"
-        for f in phase2.core_features
-    ) or "  (none captured)"
+    features_str = (
+        "\n".join(f"- [{f.priority.value.upper()}] {f.name}: {f.description}" for f in phase2.core_features)
+        or "  (none captured)"
+    )
 
     compliance_str = ", ".join(c.value for c in phase2.constraints.compliance) or "none"
-    constraints_str = "\n".join(
-        f"- {c}" for c in phase2.constraints.key_constraints
-    ) or "  (none)"
+    constraints_str = "\n".join(f"- {c}" for c in phase2.constraints.key_constraints) or "  (none)"
 
-    tools_str = "\n".join(
-        f"- {t.label} ({config.get_subscription(t) or 'unknown tier'})"
-        for t in config.agentic_tools
-    )
+    tools_str = "\n".join(f"- {t.label} ({config.get_subscription(t) or 'unknown tier'})" for t in config.agentic_tools)
 
     return f"""## Project Profile
 
@@ -96,7 +90,11 @@ def build_synthesis_user_prompt(config: ProjectConfig, phase2: Phase2Data) -> st
 
 ## Constraints
 - Compliance: {compliance_str}
-- Existing codebase: {"Yes — " + phase2.constraints.existing_stack_notes if phase2.constraints.existing_codebase else "No (greenfield)"}
+- Existing codebase: {
+        "Yes — " + phase2.constraints.existing_stack_notes
+        if phase2.constraints.existing_codebase
+        else "No (greenfield)"
+    }
 - Budget: {phase2.constraints.budget_range or "not specified"}
 - Timeline: {phase2.constraints.timeline or "not specified"}
 - Hard constraints:

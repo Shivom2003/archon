@@ -57,10 +57,7 @@ def get_client(model: str | None = None) -> LLMClient:
         if resolved.startswith("claude"):
             provider = "claude"
         else:
-            raise ValueError(
-                f"Unknown model '{resolved}'. "
-                "Set ARCHON_MODEL to a supported model name."
-            )
+            raise ValueError(f"Unknown model '{resolved}'. Set ARCHON_MODEL to a supported model name.")
 
     client_class = _CLIENTS.get(provider)
     if client_class is None:

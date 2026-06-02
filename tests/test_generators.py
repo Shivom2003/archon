@@ -1,7 +1,5 @@
 """Tests for the markdown generators."""
 
-import pytest
-
 from archon.generators import (
     AgentsMdGenerator,
     ArchitectureGenerator,

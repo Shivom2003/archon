@@ -3,11 +3,9 @@ InterviewSession — manages the state of a complete interview + synthesis run.
 Serialisable to JSON for resuming interrupted sessions.
 """
 
-import json
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -17,11 +15,11 @@ from archon.models.spec import ArchitectSpec
 
 
 class SessionState(StrEnum):
-    PHASE1 = "phase1"           # Collecting structured intake
-    PHASE2 = "phase2"           # LLM-driven interview in progress
+    PHASE1 = "phase1"  # Collecting structured intake
+    PHASE2 = "phase2"  # LLM-driven interview in progress
     SYNTHESIZING = "synthesizing"  # Running synthesis pass
-    COMPLETE = "complete"       # Spec generated successfully
-    FAILED = "failed"           # Unrecoverable error
+    COMPLETE = "complete"  # Spec generated successfully
+    FAILED = "failed"  # Unrecoverable error
 
 
 class InterviewSession(BaseModel):
@@ -65,4 +63,5 @@ class InterviewSession(BaseModel):
 
 def _new_id() -> str:
     import uuid
+
     return uuid.uuid4().hex[:12]
