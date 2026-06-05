@@ -17,6 +17,7 @@ interface Props {
 export function SpecViewer({ projectId, projectName }: Props) {
   const { getToken } = useAuth();
   const [activeTab, setActiveTab] = useState<SpecFilename>("SPEC.md");
+  const [downloading, setDownloading] = useState(false);
 
   const { data, isLoading, error } = useSWR(
     `spec-${projectId}-${activeTab}`,
@@ -28,6 +29,29 @@ export function SpecViewer({ projectId, projectName }: Props) {
     { revalidateOnFocus: false },
   );
 
+  // Download requires auth header — can't use a plain <a href>
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(getDownloadUrl(projectId), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${projectName}-architect.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -35,13 +59,13 @@ export function SpecViewer({ projectId, projectName }: Props) {
           <h1 className="text-2xl font-bold">{projectName}</h1>
           <p className="text-zinc-400 text-sm">Architecture specification</p>
         </div>
-        <a
-          href={getDownloadUrl(projectId)}
-          download={`${projectName}-architect.zip`}
-          className="px-4 py-2 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm text-zinc-300 transition-colors flex items-center gap-2"
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="px-4 py-2 rounded-lg border border-zinc-700 hover:border-zinc-500 text-sm text-zinc-300 transition-colors flex items-center gap-2 disabled:opacity-50"
         >
-          ↓ Download .zip
-        </a>
+          {downloading ? "Preparing…" : "↓ Download .zip"}
+        </button>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SpecFilename)}>
