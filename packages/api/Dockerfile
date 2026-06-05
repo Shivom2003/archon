@@ -2,21 +2,22 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install system deps needed by asyncpg
+# System deps required by asyncpg (C extension)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python deps first (layer caching)
+# Install Python dependencies first (maximises Docker layer cache)
 COPY pyproject.toml .
-RUN pip install --no-cache-dir -e "."
+RUN pip install --no-cache-dir .
 
 # Copy application code
 COPY . .
 
-# Railway injects $PORT at runtime
+# Make startup script executable
+RUN chmod +x start.sh
+
+# PORT is injected at runtime by Render / any PaaS
 EXPOSE 8000
 
-# Start: run migrations then serve
-CMD alembic upgrade head && \
-    uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD ["./start.sh"]

@@ -1,0 +1,38 @@
+# Render deployment config — free tier
+# Docs: https://render.com/docs/render-yaml-reference
+#
+# Deploy the FastAPI backend from packages/api/.
+# The database (Neon) is external — set DATABASE_URL manually in Render's dashboard.
+
+services:
+  - type: web
+    name: archon-api
+    runtime: docker
+    rootDir: packages/api
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /health
+
+    envVars:
+      # ── Set these manually in Render dashboard ──────────────────────────────
+      - key: DATABASE_URL
+        sync: false           # postgresql+asyncpg://... from Neon
+
+      - key: CLERK_JWKS_URL
+        sync: false           # https://xxx.clerk.accounts.dev/.well-known/jwks.json
+
+      - key: CLERK_API_KEY
+        sync: false           # Clerk Secret Key (sk_test_...)
+
+      - key: ANTHROPIC_API_KEY
+        sync: false           # sk-ant-... (your key for beta; replaced by BYOK in Phase 4)
+
+      - key: FRONTEND_URL
+        sync: false           # Your Vercel URL — set after Vercel deploy
+
+      # ── Fixed values — no need to change ────────────────────────────────────
+      - key: ARCHON_MODEL
+        value: claude-haiku-4-5
+
+      - key: ARCHON_SYNTHESIS_MODEL
+        value: claude-sonnet-4-5
