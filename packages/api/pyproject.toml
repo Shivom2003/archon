@@ -34,6 +34,10 @@ dev = [
     "asgi-lifespan>=2.0",      # lifespan support in tests
 ]
 
+[tool.hatch.build.targets.wheel]
+# The FastAPI app lives in app/ — tell hatchling where to find it
+packages = ["app"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
